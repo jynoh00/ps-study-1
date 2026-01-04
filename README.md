@@ -17,8 +17,8 @@
 - [2. 문자열 - 숫자 간 형변환](#2-문자열---숫자-간-형변환)
 - [3. 입출력 형태 지정 헤더 `<iomanip>`](#3-입출력-형태-지정-헤더-iomanip)
 - [4. 수학 함수 헤더 `<cmath>`](#4-수학-함수-헤더-cmath)
-- [5. 슬라이딩 윈도우 (Sliding Window) 알고리즘](#5-슬라이딩-윈도우-sliding-window-알고리즘)
-- [6. 투 포인터 (Two pointer) 알고리즘](#6-투-포인터-two-pointer-알고리즘)
+- [5. 투 포인터 (Two pointer) 알고리즘](#5-투-포인터-two-pointer-알고리즘)
+- [6. 슬라이딩 윈도우 (Sliding Window) 알고리즘](#6-슬라이딩-윈도우-sliding-window-알고리즘)
 - [7. map과 unordered_map의 시간 복잡도 분석](#7-map과-unordered_map의-시간-복잡도-분석)
 
 
@@ -288,11 +288,109 @@ long double tanh(long double x);
 
 <br>
 
-### 5. 슬라이딩 윈도우 (Sliding Window) 알고리즘
+### 5. 투 포인터 (Two pointer) 알고리즘
+
+투포인터 알고리즘은 배열 리스트와 같은 자료형에 접근해야 할 때 두 개의 점의 위치를 기록하며 처리하는 방식이다.
+
+이중 반복문을 이용할 경우 시간 복잡도가 `O(N^2)`이지만, 투포인터 방식으로 해결할 경우 `O(N)`의 시간 복잡도로 해결 가능하다.
 
 <br>
 
-### 6. 투 포인터 (Two pointer) 알고리즘
+`N`개의 자연수가 저장된 배열에서 연속된 특정 구간의 합이 `K`가 되는 부분을 찾는 예제를 통해 확인해보겠다.
+
+```c++
+int N = 7, K = 6;
+int arr[7] = {1, 3, 2, 4, 2, 1, 5};
+```
+
+투포인터가 아닌, 이중 반복문을 통해 해결할 경우
+
+```c++
+for (int i = 0; i < N; i++) {
+    int sum = 0;
+    for (int j = i; j < N; j++) {
+        sum += arr[j];
+        
+        if (sum == K) {
+            // i ~ j까지 구간 가능
+        }
+    }
+}
+```
+
+결과적으로 원하는 정답을 구할 순 있지만 `O(N^2)`의 시간복잡도에서<br>
+N의 값이 매우 커진다면 문제가 된다. 아래는 투포인터 알고리즘을 사용한 예시이다. 
+
+기본 알고리즘은 `arr[start]` ~ `arr[end]`까지의 합을 `sum`이라 할 때
+
+1. `sum > K` : `sum -= arr[start]; start++;` 
+2. `sum < K` : `sum += arr[end]; end++;`
+3. `sum = K` : `count++; end++; sum += arr[end]`
+
+```c++
+int start = 0, end = 0;
+int sum = 0;
+int count = 0;
+
+while (true) {
+    if (sum >= K) {
+        if (sum == 0) {
+            count++;
+            // start ~ end 구간 기록
+        }
+        sum -= arr[start];
+        start++;
+
+        continue;
+    }
+
+    if (end == N) break;
+    sum += arr[end];
+    end++;
+}
+```
+
+동일한 결과를 나타내지만, `start`와 `end` 포인터가 각각 최대 N번만 이동하며 연산을 처리하기에 `O(N + N) => O(N)`의 시간복잡도로 문제를 해결할 수 있었다.
+
+사이 구간을 분석할 때 유용하며, 구간의 시작점인 `start(left)`와 `end(right)` 부분의 인덱스를 가리키는 변수가 해당 알고리즘의 핵심이다. 
+
+<br>
+
+### 6. 슬라이딩 윈도우 (Sliding Window) 알고리즘
+
+슬라이딩 윈도우 알고리즘은 투포인터 알고리즘의 특수 형태로 볼 수 있다.
+
+배열 리스트와 같은 자료형의 정해진 구간을 탐색하고자 할 때 사용하며<br>
+투포인터와 방식은 동일하나 구간의 `길이(window)가 고정`되어 있다고 생각하면 된다.
+
+```c++
+string solve() {
+    needSameNumberCnt = ceil(9.0 * M / 10);
+
+    int casesNumber = (N - M) + 1;
+    map<int, int> m;
+
+    int left = 0, right = M - 1;
+    for (int i = left; i <= right; i++) { // O(M) => O(N)
+        m[A[i]]++;
+        if (m[A[i]] >= needSameNumberCnt) return CAN;
+    }
+
+    for (int i = 1; i < casesNumber; i++) { // O(N-M) => O(N)
+        m[A[left]]--;
+        m[A[right+i]]++;
+        if (m[A[right+i]] >= needSameNumberCnt) return CAN;
+        left++;
+    }
+
+    return CANT;
+}
+```
+
+해당 코드는 슬라이딩 윈도우 알고리즘을 적용하여, 빈도 수를 카운팅하는 문제 해결 함수이다.<br>
+고정된 길이 M의 구간을 검사하며 구간 내 동일 숫자의 개수를 확인하는 과정을 거친다.<br>
+
+`O(N)`인 선형 시간 내에서 문제를 해결할 수 있다.
 
 <br>
 
