@@ -395,3 +395,70 @@ string solve() {
 <br>
 
 ### 7. map과 unordered_map의 시간 복잡도 분석
+
+C++의 STL 컨테이너 중 하나인 `map`에 대하여 시간 복잡도 측면에서 분석해보고자 한다.
+
+```c++
+#include <map>
+```
+
+기본적으로 map은 `key`값과 `value`값 쌍을 저장하는 컨테이너로 작동하지만 `map`, `unordered_map`은 내부 구조에 따라 시간 복잡도가 다르다.
+
+
+1. `map`은 이진 탐색 트리 구조를 가지며 순서를 가진다. key, value로 이루어진 pair쌍은 key값에 따라 오름차순으로 자동 정렬된다.
+
+```c++
+
+map<int, int> m1;
+m1.insert(make_pair(3, 30));
+m1.insert(make_pair(2, 50));
+m1.insert(make_pair(1, 10));
+for (map<int, int>::iterator it = m1.begin(); it != m1.end(); it++) {
+    cout << it->first << endl;
+}
+```
+
+```bash
+1
+2
+3
+```
+
+즉 순서가 존재하며, 검색과 삽입/삭제의 시간 복잡도는 모두 
+
+```math
+O(logN)
+```
+
+으로, 이진 탐색 트리 내에서 삽입과 삭제가 빈번할 경우 자동으로 정렬되기에 성능 저하를 일으킬 수 있는 문제점이 있다.
+
+2. `unordered_map`은 `Hash Table`을 통해 구현된 자료구조로 이름에서 알 수 있듯이, 정렬되지 않은 `map`으로 볼 수 있다. 삽입과 삭제, 탐색 모두 평균적으로
+
+```math
+O(1)
+```
+
+의 상수 시간 복잡도를 가지고 있다. 물론 해시 테이블을 통해 구현된 자료구조이기에 해시 충돌과 같은 문제가 발생할 경우,<br>
+최악의 경우로 시간 복잡도 `O(N)`을 가진다.
+
+시간적 영역에서 `unordered_map`은 대다수의 경우에서 `map`보다 성능적으로 우수하지만, 공간적 영역에서 `map`보다 일반적으로 많은 메모리를 차지한다.
+<br>
+
+`map`, `unordered_map` 모두에서 자주 사용하는 메서드들을 간략히 정리하면 아래와 같다.
+
+```c++
+map<int, int> m; // unordered_map<int, int> m;
+
+...
+
+m.begin(); // 변수의 시작 이터레이터 반환
+m.end(); // 변수의 마지막 원소 다음 이터레이터 반환
+m.empty(); // 저장된 원소가 없으면 true
+m.erase(key); // 특정 위치의 원소 혹은 지정 범위 안 원소 삭제
+m.find(key); // 찾고자 하는 키값의 이터레이터 반환
+m.insert({key, value}); // 키-벨류 쌍 원소 추가
+m.size(); // 원소 개수 반환
+m[key]
+m.at(key) // 특정 키값에 해당하는 벨류 반환
+```
+
